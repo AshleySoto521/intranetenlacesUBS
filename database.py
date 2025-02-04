@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "postgresql+pg8000://USER:PASSWORD@localhost:5432/directorios_db"
+DATABASE_URL = "postgresql+pg8000://USER:PASSWORD@lhost:port/db"
 
 # Crear el motor de conexión
 engine = create_engine(DATABASE_URL, echo=True)
