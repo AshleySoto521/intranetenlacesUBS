@@ -1,0 +1,214 @@
+body {
+    font-family: 'Geomanist', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.logo {
+    max-width: 500px;
+    margin-right: 20px;
+}
+
+h1 {
+    color: #285c4d;
+    font-size: 24px;
+}
+
+h2 {
+    font-family: 'Geomanist', sans-serif;
+    color: #285c4d;
+    font-size: 20px;
+}
+
+h3 {
+    font-family: 'Geomanist', sans-serif;
+    color: #285c4d;
+    font-size: 20px;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+label {
+    margin-right: 10px;
+}
+
+input[type="text"], select {
+    padding: 5px;
+    margin-right: 10px;
+}
+
+button {
+    padding: 5px 10px;
+    background-color: #285c4d;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.secondary-button {
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #1e4a39;
+}
+
+table {
+    width: auto;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    
+}
+
+th {
+    background-color: #285c4d;
+    color: white;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+td {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+table-container {
+    width: auto;
+    overflow-y: auto;
+}
+
+tr:nth-child(even) {
+    background-color: #e3e3e3; /* Alterna colores de filas para mejor visibilidad */
+}
+
+.pagination {
+    margin-top: 20px;
+}
+
+.pagination a {
+    margin: 0 5px;
+    text-decoration: none;
+    color: #285c4d;
+}
+
+.pagination a:hover {
+    text-decoration: underline;
+}
+footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #888;
+}
+
+.flash-container {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    width: 300px;
+}
+
+.flash-message {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: fade-in 0.5s;
+}
+
+.flash-message.success {
+    background-color: #28a745;
+}
+
+.flash-message.warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.flash-message.error {
+    background-color: #dc3545;
+}
+
+.flash-message.info {
+    background-color: #ff9900;
+    color: #000000;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.bg-orange {
+        background-color: orange;
+        color: white;
+}
+
+.bg-green {
+        background-color: green;
+        color: white;
+}
+
+.bg-maroon {
+        background-color: maroon;
+        color: white;
+}
+
+.bg-yellow {
+        background-color: yellow;
+        color: black;
+}
+
+.bg-red {
+        background-color: red;
+        color: white;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+}
+.flex-item {
+    background-color: transparent;
+    padding: 20px;
+}
+
+#fecha-hora {
+    font-size: 1rem;
+    font-weight: medium;
+    color: #B38E5D;
+}

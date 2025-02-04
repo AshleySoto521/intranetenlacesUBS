@@ -1,0 +1,330 @@
+{% extends "base.html" %}
+
+{% block title %}RED DE SUCURSALES UBS{% endblock %}
+
+{% block content %}
+<h1 class="px-4 py-2">Intranet para enlaces de la Red de Sucursales UBS</h1>
+<!-- Barra de navegación -->
+<nav class="container shadow py-4 py-2 mt-8">
+    <div class="container flex px-4 py-2 space-x-2">
+        <a href="/concentradocontratos" class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-600">Contratos BBJ</a>
+        <a href="/concentradospei" class="px-4 py-2 bg-green-900 text-white rounded hover:bg-green-800">SPEI's</a>
+        <a href="/concentradoretiros" class="px-4 py-2 bg-green-900 text-white rounded hover:bg-green-800">Autorización retiros/traspasos</a>
+        <a href="/concentradonominales" class="px-4 py-2 bg-green-900 text-white rounded hover:bg-green-800">Concentrado Nominales</a>
+    </div>
+    <div class="container flex justify-between px-4 py-2">
+         {% if session['usuario'] %}
+            <span class="text-gray-700 font-semibold">Bienvenido {{ session['usuario'] }}</span>
+            <form action="/logout" method="POST">
+                <button type="submit" class="px-4 py-2 bg-red-900 text-white rounded hover:bg-red-800">Cerrar sesión</button>
+            </form>
+         {% endif %}
+    </div>
+</nav>
+<!-- Mostrar mensajes flash -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    <div class="flash-container">
+        <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="flash-message {{ category }}">
+                    <span class="message-content">{{ message }}</span>
+                    <button class="close-btn" onclick="this.parentElement.style.display='none';">×</button>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <script>
+        setTimeout(function() {
+            const messages = document.querySelectorAll('.flash-message');
+                messages.forEach(function(message) {
+                message.style.opacity = '0';
+                    setTimeout(() => message.style.display = 'none', 1000);
+                });
+        }, 10000);
+    </script>
+{% endif %}
+{% endwith %}
+<!-- Contenido principal -->
+<div class="mt-8 px-4 py-2">
+    <h2>Recuerda que esto medira tu gestión diaria y es importante registrar todos los procesos que aquí econtraras.</h2>
+</div>
+<div class="container mt-8 shadow px-4 py-2">
+    <h3 class="px-4 py-2">Notas importantes</h3>
+    <ol style="list-style-type: square;" class="px-4 py-2">
+        <li>Para los casos de SPEI's recuerda que el estatus <b>"ENVIADO"</b> debe ser actualizado al termino del día ya que no se pueden quedar en estatus "ENVIADO".</li>
+        <li>En el caso de los retiros en efectivo o cheque el <b>beneficiario</b> y <b>cuenta beneficiario</b> son el mismo que la cuenta de origen y titular.</li>
+    </ol>
+    <br>
+    <a class="px-4 py-2 text-blue-700" href="{{ url_for('descargar_archivo') }}" download>Descargar Lay Out solicitud de contratos</a>
+    <a class="px-4 py-2 text-blue-700" href="http://172.26.13.227:5002/" target="_blank" rel="noopener noreferrer">Directorio Sucursales UBS 2025</a>
+    <a class="px-4 py-2 text-blue-700" href="http://172.26.13.227:5004/" target="_blank" rel="noopener noreferrer">Formatos 2025</a><br>
+<br>
+</div>
+<div class="flex-container shadow px-4 py-2 mt-8">
+    <div class="flex-item">
+        <h2>ENLACES DE LA RED DE SUCURSALES UBS</h2>
+            <table class="table-auto border-collapse border border-gray-300 w-auto">
+                <thead>
+                    <tr class="border px-4 py-2 border-gray-300 text-center">
+                        <th>Entidad</th>
+                        <th>Enlace</th>
+                        <th>Extensión</th>
+                        <th>Hora de Comida</th>
+                        <th>Enlace apoyo</th>
+                        <th>Extensión</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="border px-4 py-2 text-center">
+                            JALISCO<br>
+                            COLIMA<br>
+                            NAYARIT
+                        </td>
+                        <td class="border px-4 py-2">ADRIAN HUERTA CAPISTRAN</td>
+                        <td class="border px-4 py-2 text-center">4481</td>
+                        <td class="border px-4 py-2 text-center">15:00 a 16:00</td>
+                        <td class="border px-4 py-2">ISAIAS ROBERTO ORTIZ ARAMBULA</td>
+                        <td class="border px-4 py-2 text-center">4573</td>
+                    </tr>
+                    <tr class="bg-gray-200">
+                        <td class="border px-4 py-2 text-center">
+                            BAJA CALIFORNIA<br>
+                            BAJA CALIFORNIA SUR <br>
+                            CHIHUAHUA<br>
+                            VERACRUZ<br>
+                            COAHUILA
+                        </td>
+                        <td class="border px-4 py-2">ALEXIS EDUARDO GONZALEZ AGUILAR</td>
+                        <td class="border px-4 py-2 text-center">3246</td>
+                        <td class="border px-4 py-2 text-center">14:00 a 15:00</td>
+                        <td class="border px-4 py-2">LUIS ALBERTO VAZQUEZ MORALES</td>
+                        <td class="border px-4 py-2 text-center">4356</td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2 text-center">
+                            TABASCO<br>
+                            TLAXCALA<br>
+                            TAMAULIPAS<br>
+                            SAN LUIS POTOSI
+                        </td>
+                        <td class="border px-4 py-2">ASHLEY SOTO TOME</td>
+                        <td class="border px-4 py-2 text-center">4054</td>
+                        <td class="border px-4 py-2 text-center">15:00 a 16:00</td>
+                        <td class="border px-4 py-2">IXCHEL BURGOS VILLANUEVA</td>
+                        <td class="border px-4 py-2 text-center">3254</td>
+                    </tr>
+                    <tr class="bg-gray-200">
+                        <td class="border px-4 py-2 text-center">
+                            GUERRERO
+                        </td>
+                        <td class="border px-4 py-2">CLAUDIA CECILIA LAPPE DIAZ</td>
+                        <td class="border px-4 py-2 text-center">3616</td>
+                        <td class="border px-4 py-2 text-center">14:00 a 15:00</td>
+                        <td class="border px-4 py-2">JORGE GONZALEZ FLORES</td>
+                        <td class="border px-4 py-2 text-center">4202</td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2 text-center">
+                            VERACRUZ (POZA RICA)
+                        </td>
+                        <td class="border px-4 py-2">GILDA LAURA GARCIA CHARNICHART</td>
+                        <td class="border px-4 py-2 text-center">4428</td>
+                        <td class="border px-4 py-2 text-center">14:00 a 15:00</td>
+                        <td class="border px-4 py-2">LINCI RODRIGUEZ VERGARA</td>
+                        <td class="border px-4 py-2 text-center">3532</td>
+                    </tr>
+                    <tr class="bg-gray-200">
+                        <td class="border px-4 py-2 text-center">
+                            PUEBLA
+                        </td>
+                        <td class="border px-4 py-2">GUADALUPE HERRERA MARTINEZ</td>
+                        <td class="border px-4 py-2 text-center">4545</td>
+                        <td class="border px-4 py-2 text-center">14:00 a 15:00</td>
+                        <td class="border px-4 py-2">VALENTE OCAMPO PACHECO</td>
+                        <td class="border px-4 py-2 text-center">5510</td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2 text-center">
+                            QUERETARO<br>
+                            YUCATAN<br>
+                            ZACATECAS
+                        </td>
+                        <td class="border px-4 py-2">JORGE GONZALEZ FLORES</td>
+                        <td class="border px-4 py-2 text-center">4202</td>
+                        <td class="border px-4 py-2 text-center">15:00 a 16:00</td>
+                        <td class="border px-4 py-2">CLAUDIA CECILIA LAPPE DIAZ</td>
+                        <td class="border px-4 py-2 text-center">3616</td>
+                    </tr>
+                    <tr class="bg-gray-200">
+                        <td class="border px-4 py-2 text-center">
+                            OAXACA
+                        </td>
+                        <td class="border px-4 py-2">ISRAEL ZUÑIGA MARTINEZ</td>
+                        <td class="border px-4 py-2 text-center">5997</td>
+                        <td class="border px-4 py-2 text-center">15:00 a 16:00</td>
+                        <td class="border px-4 py-2">LAURA MIRANDA LIRA</td>
+                        <td class="border px-4 py-2 text-center">3244</td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2 text-center">
+                            AGUASCALIENTES<br>
+                            QUINTANA ROO<br>
+                            ECATEPEC
+                        </td>
+                        <td class="border px-4 py-2">IXCHEL BURGOS VILLANUEVA</td>
+                        <td class="border px-4 py-2 text-center">3254</td>
+                        <td class="border px-4 py-2 text-center">14:00 a 15:00</td>
+                        <td class="border px-4 py-2">ASHLEY SOTO TOME</td>
+                        <td class="border px-4 py-2 text-center">4054</td>
+                    </tr>
+                    <tr class="bg-gray-200">
+                        <td class="border px-4 py-2 text-center">
+                            TOLUCA
+                    </td>
+                        <td class="border px-4 py-2">LAURA MIRANDA LIRA</td>
+                        <td class="border px-4 py-2 text-center">3244</td>
+                        <td class="border px-4 py-2 text-center">14:00 a 15:00</td>
+                        <td class="border px-4 py-2">ISRAEL ZUÑIGA MARTINEZ</td>
+                        <td class="border px-4 py-2 text-center">5997</td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2 text-center">
+                            CAMPECHE<br>
+                            SINALOA<br>
+                            SONORA
+                        </td>
+                        <td class="border px-4 py-2">ISAIAS ROBERTO ORTIZ ARAMBULA</td>
+                        <td class="border px-4 py-2 text-center">4573</td>
+                        <td class="border px-4 py-2 text-center">14:00 a 15:00</td>
+                        <td class="border px-4 py-2">ADRIAN HUERTA CAPISTRAN</td>
+                        <td class="border px-4 py-2 text-center">4481</td>
+                    </tr>
+                    <tr class="bg-gray-200">
+                        <td class="border px-4 py-2 text-center">
+                            HIDALGO<br>
+                            NUEVO LEON
+                        </td>
+                        <td class="border px-4 py-2">LINCI RODRIGUEZ VERGARA</td>
+                        <td class="border px-4 py-2 text-center">3532</td>
+                        <td class="border px-4 py-2 text-center">15:00 a 16:00</td>
+                        <td class="border px-4 py-2">GILDA LAURA GARCIA CHARNICHART</td>
+                        <td class="border px-4 py-2 text-center">4428</td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2 text-center">
+                            CHIAPAS
+                        </td>
+                        <td class="border px-4 py-2">JOSE EDUARDO VASQUEZ MORALES</td>
+                        <td class="border px-4 py-2 text-center">5061</td>
+                        <td class="border px-4 py-2 text-center">15:00 a 16:00</td>
+                        <td class="border px-4 py-2">RODRIGO ALBERTO SUAREZ RIOS</td>
+                        <td class="border px-4 py-2 text-center">4565</td>
+                    </tr>
+                    <tr class="bg-gray-200">
+                        <td class="border px-4 py-2 text-center">
+                            MICHOACAN
+                        </td>
+                        <td class="border px-4 py-2">LUIS ALBERTO VAZQUEZ MORALES</td>
+                        <td class="border px-4 py-2 text-center">4356</td>
+                        <td class="border px-4 py-2 text-center">15:00 a 16:00</td>
+                        <td class="border px-4 py-2">ALEXIS EDUARDO GONZALEZ AGUILAR</td>
+                        <td class="border px-4 py-2 text-center">3246</td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2 text-center">
+                            CIUDAD DE MEXICO<br>
+                            MORELOS
+                        </td>
+                        <td class="border px-4 py-2">VALENTE OCAMPO PACHECO</td>
+                        <td class="border px-4 py-2 text-center">5510</td>
+                        <td class="border px-4 py-2 text-center">15:00 a 16:00</td>
+                        <td class="border px-4 py-2">GUADALUPE HERRERA MARTINEZ</td>
+                        <td class="border px-4 py-2 text-center">4545</td>
+                    </tr>
+                    <tr class="bg-gray-200">
+                        <td class="border px-4 py-2 text-center">
+                            DURANGO<br>
+                            GUANAJUATO
+                        </td>
+                        <td class="border px-4 py-2">RODRIGO ALBERTO SUAREZ RIOS</td>
+                        <td class="border px-4 py-2 text-center">4565</td>
+                        <td class="border px-4 py-2 text-center">14:00 a 15:00</td>
+                        <td class="border px-4 py-2">JOSE EDUARDO VASQUEZ MORALES</td>
+                        <td class="border px-4 py-2 text-center">5061</td>
+                    </tr>
+                </tbody>
+            </table>
+    </div>
+    <div class="flex-item">
+        <h2>PERSONA AUTORIZADA PARA ALTA SPEI's</h2>
+        <table class="table-auto border-collapse border border-gray-300 w-auto">
+            <thead>
+                <tr class="border px-4 py-2 border-gray-300 text-center">
+                    <th>Nombre</th>
+                    <th>Extensión</th>
+                    <th>BACK</th>
+                    <th>Extensión</th>
+                </tr>
+            </thead> 
+            <tbody>
+                <tr>
+                    <td class="border px-4 py-2">ALEJANDRO CRUZ</td>
+                    <td class="border px-4 py-2 text-center">3381</td>
+                    <td class="border px-4 py-2">VICTORIA RAMÍREZ</td>
+                    <td class="border px-4 py-2 text-center">4353</td>
+                </tr>
+                <tr class="bg-gray-200">
+                    <td class="border px-4 py-2">JAVIER SANTANA</td>
+                    <td class="border px-4 py-2 text-center">4043</td>
+                    <td class="border px-4 py-2">SILVIA TORRES</td>
+                    <td class="border px-4 py-2 text-center">5156</td>
+                </tr>
+                <tr>
+                    <td class="border px-4 py-2">JORGE GONZALEZ</td>
+                    <td class="border px-4 py-2 text-center">4202</td>
+                    <td class="border px-4 py-2">LUIS VAZQUEZ</td>
+                    <td class="border px-4 py-2 text-center">4356</td>
+                </tr>
+                <tr class="bg-gray-200">
+                    <td class="border px-4 py-2">LUIS VAZQUEZ</td>
+                    <td class="border px-4 py-2 text-center">4356</td>
+                    <td class="border px-4 py-2">JORGE GONZALES</td>
+                    <td class="border px-4 py-2 text-center">4202</td>
+                </tr>
+                <tr>
+                    <td class="border px-4 py-2">MAURICIO PAZ</td>
+                    <td class="border px-4 py-2 text-center">3376</td>
+                    <td class="border px-4 py-2">ORLANDO PEREZ</td>
+                    <td class="border px-4 py-2 text-center">4506</td>
+                </tr>
+                <tr class="bg-gray-200">
+                    <td class="border px-4 py-2">ORLANDO PEREZ</td>
+                    <td class="border px-4 py-2 text-center">4506</td>
+                    <td class="border px-4 py-2">MAURICIO PAZ</td>
+                    <td class="border px-4 py-2 text-center">3376</td>
+                </tr>
+                <tr>
+                    <td class="border px-4 py-2">SILVIA TORRES</td>
+                    <td class="border px-4 py-2 text-center">5156</td>
+                    <td class="border px-4 py-2">JAVIER SANTANA</td>
+                    <td class="border px-4 py-2 text-center">4043</td>
+                </tr>
+                <tr class="bg-gray-200">
+                    <td class="border px-4 py-2">VALENTE OCAMPO</td>
+                    <td class="border px-4 py-2 text-center">5510</td>
+                    <td class="border px-4 py-2">VICTORIA RAMIREZ</td>
+                    <td class="border px-4 py-2 text-center">4353</td>
+                </tr>
+                <tr>
+                    <td class="border px-4 py-2">VICTORIA RAMIREZ</td>
+                    <td class="border px-4 py-2 text-center">4303</td>
+                    <td class="border px-4 py-2">VALENTE OCAMPO</td>
+                    <td class="border px-4 py-2 text-center">5510</td>
+                </tr>
+            </tbody> 
+        </table>
+    </div>
+</div>
+{% endblock %}

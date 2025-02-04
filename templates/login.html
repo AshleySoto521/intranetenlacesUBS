@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio de Sesión{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+        <h2 class="text-2xl font-semibold mb-4">Iniciar sesión</h2>
+        <form method="POST" action="/login">
+            <div class="mb-4">
+                <label for="correo" class="block text-gray-700">Correo</label>
+                <input type="email" id="correo" name="correo" class="w-full p-2 border border-gray-300 rounded" placeholder="juanperez@bancodelbienestar..." required>
+            </div>
+            <div class="mb-4">
+                <label for="contrasena" class="block text-gray-700">Contraseña</label>
+                <input type="password" id="contrasena" name="contrasena" class="w-full p-2 border border-gray-300 rounded" placeholder="******" required>
+                <div class="mt-2 flex items-center">
+                    <input type="checkbox" id="mostrar_contrasena" class="mr-2">
+                    <label for="mostrar_contrasena" class="text-gray-600 text-sm">Mostrar contraseña</label>
+                </div>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded">Iniciar sesión</button>
+            <!-- Mostrar mensajes flash -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-container">
+                        <ul class="flashes">
+                        {% for category, message in messages %}
+                            <li class="flash-message {{ category }}">
+                                <span class="message-content">{{ message }}</span>
+                                <button class="close-btn" onclick="this.parentElement.style.display='none';">×</button>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    <script>
+                        // Espera 10 segundos y luego oculta los mensajes flash automáticamente
+                        setTimeout(function() {
+                            const messages = document.querySelectorAll('.flash-message');
+                            messages.forEach(function(message) {
+                                message.style.opacity = '0';
+                                setTimeout(() => message.style.display = 'none', 1000);
+                            });
+                        }, 10000);
+                    </script>
+                {% endif %}
+            {% endwith %}
+        </form>
+        <footer class="mt-4">
+            <p>¿No tienes cuenta? <a href="{{ url_for('register') }}" class="text-blue-600">Regístrate</a></p>
+        </footer>        
+    </div>
+</div>
+    <script>
+        document.getElementById('mostrar_contrasena').addEventListener('change', function() {
+            const passwordField = document.getElementById('contrasena');
+            if (this.checked) {
+                passwordField.type = 'text';
+            } else {
+                passwordField.type = 'password';
+            }
+        });
+    </script>
+{% endblock %}

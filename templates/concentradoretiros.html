@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Concentrado Retiros{% endblock %}
+
+{% block content %}
+    <!-- Barra de navegación -->
+    <nav class="container shadow py-4 py-2">
+        <div class="container flex px-4 py-2 space-x-2">
+            <a href="/" class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-600">Inicio</a>
+            <a href="/retiros" class="px-4 py-2 bg-green-800 text-white rounded hover:bg-green-700">Nueva autorización</a>
+            <a href="/downloadretiros" class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-600">Descargar Concentrado Retiros</a>
+        </div>
+        <div class="container flex justify-between px-4 py-2">
+            {% if session['usuario'] %}
+                <span class="text-gray-700 font-semibold">Bienvenido {{ session['usuario'] }}</span>
+                <form action="/logout" method="POST">
+                    <button type="submit" class="px-4 py-2 bg-red-900 text-white rounded hover:bg-red-800">Cerrar sesión</button>
+                </form>
+            {% endif %}
+        </div>
+    </nav>
+    <!-- Mostrar mensajes flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                    <ul class="flashes">
+                        {% for category, message in messages %}
+                            <li class="flash-message {{ category }}">
+                                <span class="message-content">{{ message }}</span>
+                                <button class="close-btn" onclick="this.parentElement.style.display='none';">×</button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <script>
+                    // Espera 10 segundos y luego oculta los mensajes flash automáticamente
+                    setTimeout(function() {
+                        const messages = document.querySelectorAll('.flash-message');
+                        messages.forEach(function(message) {
+                            message.style.opacity = '0';
+                            setTimeout(() => message.style.display = 'none', 1000);
+                        });
+                    }, 10000);
+                </script>
+            {% endif %}
+        {% endwith %}
+    <!-- Contenido principal -->
+    <div class="container mt-8">
+        <div>
+            <h3 class="text-lg font-semibold mb-2">Total de autorizaciones</h3>
+            <table class="table-auto border-collapse border border-gray-300 w-auto">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 border border-gray-300 text-left max-w-xs whitespace-nowrap">Operación</th>
+                        <th class="px-4 py-2 border border-gray-300 text-left">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Totales por operacion -->
+                    {% for operacion, total in operacion_totals.items() %}
+                        {% if operacion != "total_general" %}
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2">{{ operacion }}</td>
+                                <td class="border border-gray-300 px-4 py-2">{{ total }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    <!-- Total general -->
+                    <tr class="bg-gray-200 font-bold">
+                        <td class="border border-gray-300 px-4 py-2">Total General</td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            {{ operacion_totals["total_general"] }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <h2 class="mt-8">Concentrado retiros</h2>
+    <div class="container mt-8">
+        <form method="get" action="/concentradoretiros">
+            <input type="text" name="search" value="{{ search_term }}" placeholder="Buscar..." class="px-4 py-2 border rounded">
+            <button type="submit" class="px-4 py-2 ml-2 bg-green-900 text-white rounded ">Buscar</button>
+        </form>
+        <table class="min-w-full table-auto border-collapse mt-6">
+            <thead>
+                <tr>
+                    <th class="px-4 py-2">CC</th>
+                    <th class="px-4 py-2">Sucursal</th>
+                    <th clasee="px-4 py2">Centro Regional</th>
+                    <th class="px-4 py-2">Titular</th>
+                    <th class="px-4 py-2">Cuenta Origen</th>
+                    <th class="px-4 py-2">Beneficiario</th>
+                    <th class="px-4 py-2">Cuenta Beneficiario</th>
+                    <th class="px-4 py-2">Importe</th>
+                    <th class="px-4 py-2">Motivo</th>
+                    <th class="px-4 py-2">Operación</th>
+                    <th class="px-4 py-2">Enlace</th>
+                    <th class="px-4 py-2">Fecha Tramite</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for retiros in retiros %}
+                    <tr>
+                        <td class="border px-4 py-2">{{ retiros.cc or '' }}</td>
+                        <td class="border px-4 py-2">{{ retiros.sucursal or '' }}</td>
+                        <td class="border px-4 py-2">{{ retiros.cr or '' }}</td>
+                        <td class="border px-4 py-2">{{ retiros.titular or '' }}</td>
+                        <td class="border px-4 py-2">{{ retiros.cuenta_origen or '' }}</td>
+                        <td class="border px-4 py-2">{{ retiros.beneficiario or '' }}</td>
+                        <td class="border px-4 py-2">{{ retiros.cuenta_destino or '' }}</td>
+                        <td class="border px-4 py-2">${{ retiros.importe or '' }}</td>
+                        <td class="border px-4 py-2">{{ retiros.motivo or '' }}</td>
+                        <td class="border px-4 py-2">{{ retiros.operacion or '' }}</td>
+                        <td class="border px-4 py-2">{{ retiros.usuario or '' }}</td>
+                        <td class="border px-4 py-2">{{ retiros.fecha_tramite or '' }}</td>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-4 flex justify-between items-center">
+            <span>Total de resultados: {{ total }}</span>
+            <nav>
+                <ul class="flex space-x-2">
+                    {% if page > 1 %}
+                        <li><a href="?page=1&search={{ search_term }}" class="px-4 py-2 bg-gray-300 rounded">Inicio</a></li>
+                        <li><a href="?page={{ page - 1 }}&search={{ search_term }}" class="px-4 py-2 bg-gray-300 rounded">Anterior</a></li>
+                    {% endif %}
+                    {% if page * per_page < total %}
+                        <li><a href="?page={{ page + 1 }}&search={{ search_term }}" class="px-4 py-2 bg-gray-300 rounded">Siguiente</a></li>
+                        <li><a href="?page={{ (total // per_page) + 1 }}&search={{ search_term }}" class="px-4 py-2 bg-gray-300 rounded">Última</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% endblock %}

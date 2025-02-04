@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}CAPTURA DE SPEI's{% endblock %}
+
+{% block content %}
+<!-- Barra de navegación -->
+<nav class="container shadow py-4 py-2">
+    <div class="container flex px-4 py-2 space-x-2">
+        <a href="/" class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-600">Inicio</a>
+        <a href="/concentradospei" class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-600">Concentrado SPEI's</a>
+        <a href="/downloadspei" class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-600">Descargar Concentrado SPEI's</a>
+    </div>
+    <div class="container flex justify-between px-4 py-2">
+        {% if session['usuario'] %}
+            <span class="text-gray-700 font-semibold">Bienvenido {{ session['usuario'] }}</span>
+            <form action="/logout" method="POST">
+                <button type="submit" class="px-4 py-2 bg-red-900 text-white rounded hover:bg-red-800">Cerrar sesión</button>
+            </form>
+        {% endif %}
+    </div>
+</nav>
+<!-- Mostrar mensajes flash -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flash-container">
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="flash-message {{ category }}">
+                        <span class="message-content">{{ message }}</span>
+                        <button class="close-btn" onclick="this.parentElement.style.display='none';">×</button>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <script>
+            setTimeout(function() {
+                const messages = document.querySelectorAll('.flash-message');
+                    messages.forEach(function(message) {
+                        message.style.opacity = '0';
+                        setTimeout(() => message.style.display = 'none', 1000);
+                    });
+            }, 10000);  // 10000 ms = 10 segundos
+        </script>
+    {% endif %}
+{% endwith %}
+<!-- Contenido principal -->
+<div class="container px-4 py-2 mt-8 shadow">
+    <!-- Formulario de búsqueda -->
+    <form action="/insert_spei" method="POST" id="formulario" class="bg-white p-6 rounded-lg shadow-md max-w-xl mx-auto">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Captura SPEI's</h2>
+        <!-- Campo Fecha de Trámite -->
+        <div class="mb-4">
+            <label for="fecha_tramite" class="block text-sm font-medium text-gray-600 mb-1">Fecha de Trámite:</label>
+            <input type="date" id="fecha_tramite" name="fecha_tramite" required class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-green-300">
+        </div>
+        <!-- Campo Centro de Costos (CC) con botón de búsqueda -->
+        <div class="mb-4 flex items-center">
+            <div class="flex-grow">
+                <label for="cc" class="block text-sm font-medium text-gray-600 mb-1">Centro de Costos (CC):</label>
+                <input type="number" id="cc" name="cc" required class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-green-300" placeholder="908">
+            </div>
+            <button id="buscar-cc" type="button" class="ml-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring focus:ring-blue-300">Buscar</button>
+            </div>
+        <!-- Campo Sucursal -->
+        <div class="mb-4">
+            <label for="sucursal" class="block text-sm font-medium text-gray-600 mb-1">Sucursal:</label>
+            <input type="text" id="sucursal" name="sucursal" readonly required class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-green-300">
+        </div>
+        <!-- Campo Titular -->
+        <div class="mb-4">
+            <label for="titular" class="block text-sm font-medium text-gray-600 mb-1">Titular:</label>
+            <input type="text" id="titular" name="titular" required class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-green-300" placeholder="Juan Perez">
+        </div>
+        <!-- Campo Cuenta Origen -->
+        <div class="mb-4">
+            <label for="cuenta_origen" class="block text-sm font-medium text-gray-600 mb-1">Cuenta Origen:</label>
+            <input type="number" id="cuenta_origen" name="cuenta_origen" required class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-green-300" placeholder="1236547890">
+        </div>
+        <!-- Campo Beneficiario -->
+        <div class="mb-4">
+            <label for="beneficiario" class="block text-sm font-medium text-gray-600 mb-1">Beneficiario:</label>
+            <input type="text" id="beneficiario" name="beneficiario" required class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-green-300" placeholder="Pedro Lopez">
+        </div>
+        <!-- Campo Cuenta Beneficiaria -->
+        <div class="mb-4">
+            <label for="cuenta_beneficiaria" class="block text-sm font-medium text-gray-600 mb-1">Cuenta Beneficiaria:</label>
+            <input type="number" id="cuenta_beneficiaria" name="cuenta_beneficiaria" required class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-green-300" placeholder="CLABE 18 dígitos" minlength="18" maxlength="18">
+        </div>
+        <!-- Confirmación de Cuenta -->
+        <div class="mb-4">
+            <label for="confirmar_cuenta_beneficiaria" class="block text-sm font-medium text-gray-600 mb-1">Confirmar Cuenta Beneficiaria:</label>
+                <input type="number" id="confirmar_cuenta_beneficiaria" name="confirmar_cuenta_beneficiaria" required class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-green-300" placeholder="Confirma la CLABE">
+                <span id="error-cuenta" class="text-red-500 text-sm hidden">Las cuentas no coinciden.</span>
+        </div>
+        <!-- Campo Importe -->
+        <div class="mb-4">
+            <label for="importe" class="block text-sm font-medium text-gray-600 mb-1">Importe: $</label>
+            <input type="numeric" id="importe" name="importe" required class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-green-300" placeholder="Solo monto">
+        </div>
+        <!-- Campo Autorizador -->
+        <div class="mb-4">
+            <label for="autorizador" class="block text-sm font-medium text-gray-600 mb-1">Autorizador:</label>
+            <select id="autorizador" name="autorizador" required class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-green-300">
+                <option value="" disabled selected>Seleccione un autorizador</option>
+                <option value="ABRAHAM PELCASTRE SOTO">ABRAHAM PELCASTRE SOTO</option>
+                <option value="GLADYS DEYANIRA GONZÁLEZ ARELLANO">GLADYS DEYANIRA GONZÁLEZ ARELLANO</option>
+                <option value="MARIA DE LOS ANGELES PEREZ FRAGA">MARIA DE LOS ANGELES PEREZ FRAGA</option>
+                <option value="MARIA VERONICA RUALES CARRANZA">MARIA VERONICA RUALES CARRANZA</option>
+            </select>
+        </div>
+        <!-- Botón -->
+        <div class="text-center">
+            <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:ring focus:ring-green-300">Enviar Spei</button>
+        </div>
+    </form>
+</div>
+<script>
+    // Lógica de búsqueda para el CC
+        document.getElementById("buscar-cc").addEventListener("click", async () => {
+            const cc = document.getElementById("cc").value;
+                if (!cc) {
+                    alert("Por favor, ingresa un Centro de Costos (CC)");
+                    return;
+                }
+                try {
+                    const response = await fetch(`/buscar_sucursal?cc=${cc}`);
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            alert("Sucursal no encontrada.");
+                        } else {
+                            alert("Ocurrió un error al buscar la sucursal.");
+                        }
+                        return;
+                    }
+                    const data = await response.json();
+                    document.getElementById("sucursal").value = data.sucursal;
+                    } catch (error) {
+                        console.error("Error al buscar la sucursal:", error);
+                        alert("Error al conectar con el servidor.");
+                    }
+            });
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("formulario");
+                form.addEventListener("submit", (e) => {
+                    // Obtener valores de los campos
+                    const cuentaOrigen = document.getElementById("cuenta_origen").value;
+                    const cuentaBeneficiaria = document.getElementById("cuenta_beneficiaria").value;
+                    const confirmarCuenta = document.getElementById("confirmar_cuenta_beneficiaria").value;
+                    const errorCuenta = document.getElementById("error-cuenta");
+        
+                    // Validar cuenta origen
+                    if (cuentaOrigen.length < 8 || cuentaOrigen.length > 10) {
+                        e.preventDefault(); // Detener el envío del formulario
+                        alert("La Cuenta Origen debe tener entre 8 y 10 dígitos.");
+                        return;
+                    }
+        
+                    // Validar cuenta beneficiaria
+                    if (cuentaBeneficiaria.length !== 18) {
+                        e.preventDefault();
+                        alert("La Cuenta Beneficiaria debe tener exactamente 18 dígitos.");
+                        return;
+                    }
+        
+                    // Validar confirmación de cuenta beneficiaria
+                    if (cuentaBeneficiaria !== confirmarCuenta) {
+                        e.preventDefault();
+                        errorCuenta.classList.remove("hidden"); // Mostrar mensaje de error
+                        return;
+                    } else {
+                        errorCuenta.classList.add("hidden"); // Ocultar mensaje de error
+                    }
+        
+                    // Si todas las validaciones son correctas, mostrar mensaje
+                    alert("Formulario enviado correctamente.");
+                });
+            });
+</script>
+{% endblock %}

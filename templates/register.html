@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}REGISTRO RED DE SUCURSALES{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+        <h2 class="text-2xl font-semibold mb-4">Crear cuenta</h2>
+        <!-- Mostrar mensajes flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                    <ul class="flashes">
+                        {% for category, message in messages %}
+                            <li class="flash-message {{ category }}">
+                                <span class="message-content">{{ message }}</span>
+                                <button class="close-btn" onclick="this.parentElement.style.display='none';">×</button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <script>
+                    setTimeout(function() {
+                        const messages = document.querySelectorAll('.flash-message');
+                        messages.forEach(function(message) {
+                            message.style.opacity = '0';
+                                setTimeout(() => message.style.display = 'none', 1000);
+                            });
+                    }, 10000);
+                </script>
+            {% endif %}
+        {% endwith %}
+        <form method="POST" action="/register" onsubmit="return validarContrasena()">
+            <div class="mb-4">
+                <label for="nombre" class="block text-gray-700">Nombre Completo</label>
+                    <input type="text" id="nombre" name="nombre" class="w-full p-2 border border-gray-300 rounded" placeholder="Juan Perez..." required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="correo" class="block text-gray-700">Correo</label>
+                        <input type="email" id="correo" name="correo" class="w-full p-2 border border-gray-300 rounded" placeholder="juanperez@bancodelbienestar..." required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="contraseña" class="block text-gray-700">Contraseña</label>
+                        <input type="password" id="contraseña" name="contraseña" class="w-full p-2 border border-gray-300 rounded" placeholder="*******" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="confirmar_contraseña" class="block text-gray-700">Confirmar contraseña</label>
+                        <input type="password" id="confirmar_contraseña" name="confirmar_contraseña" class="w-full p-2 border border-gray-300 rounded" placeholder="******" required>
+                        <div class="mt-2 flex items-center">
+                            <input type="checkbox" id="mostrar_contraseña" class="mr-2">
+                            <label for="mostrar_contraseña_register" class="text-gray-600 text-sm">Mostrar contraseñas</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded">Registrarse</button>
+        </form>
+        <footer class="mt-4">
+            <p>¿Ya tienes cuenta? <a href="{{ url_for('login') }}" class="text-blue-600">Iniciar sesión</a></p>
+        </footer>
+    </div>
+</div>
+<script>
+    // Alternar visibilidad de las contraseñas
+    document.getElementById('mostrar_contraseña_register').addEventListener('change', function() {
+        const passwordField = document.getElementById('contraseña');
+        const confirmPasswordField = document.getElementById('confirmar_contraseña');
+        if (this.checked) {
+            passwordField.type = 'text';
+            confirmPasswordField.type = 'text';
+        } else {
+            passwordField.type = 'password';
+            confirmPasswordField.type = 'password';
+        }
+    });
+
+    // Validar que las contraseñas coincidan
+    function validarContrasena() {
+        const password = document.getElementById('contraseña').value;
+        const confirmPassword = document.getElementById('confirmar_contraseña').value;
+
+        if (password !== confirmPassword) {
+            alert("Las contraseñas no coinciden. Por favor, verifica e inténtalo de nuevo.");
+            return false;
+        }
+        return true;
+    }
+</script>
+{% endblock %}

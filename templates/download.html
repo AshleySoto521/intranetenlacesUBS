@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}DESCARGAR CONCENTRADO CONTRATOS{% endblock %}
+
+{% block content %}
+<div class="container flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Descarga Concentrado Contratos Programas</h1>
+</div>
+<form action="{{ url_for('download') }}" method="post" class="mt-4 bg-white p-6 rounded shadow-md">
+    <!-- Selector de fechas -->
+    <label for="start_date" class="block font-semibold mb-2">Fecha de inicio:</label>
+    <input type="date" id="start_date" name="start_date" class="border rounded px-2 py-1 mb-4 w-full">
+    <label for="end_date" class="block font-semibold mb-2">Fecha de fin:</label>
+    <input type="date" id="end_date" name="end_date" class="border rounded px-2 py-1 mb-4 w-full">
+    <!-- Botón de envío -->
+    <button type="submit" class="bg-green-700 text-white rounded px-4 py-2 hover:bg-green-800">
+        Generar Concentrado
+    </button>
+</form>
+<!-- Mostrar mensajes flash -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flash-container">
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="flash-message {{ category }}">
+                        <span class="message-content">{{ message }}</span>
+                        <button class="close-btn" onclick="this.parentElement.style.display='none';">×</button>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <script>
+            setTimeout(function() {
+                const messages = document.querySelectorAll('.flash-message');
+                messages.forEach(function(message) {
+                    message.style.opacity = '0';
+                        setTimeout(() => message.style.display = 'none', 1000);
+                    });
+            }, 10000);
+        </script>
+    {% endif %}
+{% endwith %}
+<!-- Barra de navegación para subir, actualizar y descargar archivos -->
+<div class="container mt-4">
+    <nav class="flex space-x-2">
+        <a href="/" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Inicio</a>
+        <a href="/concentradocontratos" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Concentrado Contratos</a>
+        <a href="/update" class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800">Actualizar Estatus</a>
+        <a href="/upload" class="px-4 py-2 bg-green-800 text-white rounded hover:bg-green-500">Subir Archivos</a>
+    </nav>
+</div>
+{% endblock %}

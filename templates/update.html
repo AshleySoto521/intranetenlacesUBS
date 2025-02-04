@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}ACTUALIZAR ESTATUS{% endblock %}
+
+{% block content %}
+<h1 class="mt-8">Actualizar Estatus</h1>
+<div class="container px-4 py-2">
+    <!-- Mostrar mensajes flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          <ul class="flashes">
+            {% for category, message in messages %}
+              <li class="flash-message {{ category }}">
+                <span class="message-content">{{ message }}</span>
+                  <button class="close-btn" onclick="this.parentElement.style.display='none';">×</button>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+        <script>
+          setTimeout(function() {
+            const messages = document.querySelectorAll('.flash-message');
+              messages.forEach(function(message) {
+                message.style.opacity = '0';
+                  setTimeout(() => message.style.display = 'none', 1000);
+                });
+          }, 10000);
+        </script>
+      {% endif %}
+    {% endwith %}
+  <!-- Formulario de carga de archivo -->
+  <div class="container bg-white p-6 rounded shadow-md mt-4">
+    <h2 class="text-xl font-semibold">Actualizar Estatus Masivo</h2>
+    <form action="/update" method="POST" enctype="multipart/form-data" class="my-4">
+      <label for="file" class="block text-lg font-semibold mb-2">Seleccionar archivo:</label>
+      <input type="file" name="file" id="file" accept=".xlsx" class="block w-full border rounded px-4 py-2 my-2">
+      <button type="submit" class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800">Actualizar Estatus</button>
+    </form>
+  </div>
+</div>
+<!-- Barra de navegación para subir, actualizar y descargar archivos -->
+<div class="container mt-4">
+  <nav class="flex space-x-2">
+      <a href="/" class="px-4 py-2 bg-green-600 text-white rounded ml-2 hover:bg-green-500">Inicio</a>
+      <a href="/concentradocontratos" class="px-4 py-2 bg-green-700 text-white rounded ml-2 hover:bg-green-600">Concentrado Contratos</a>
+      <a href="/upload" class="px-4 py-2 bg-green-800 text-white rounded ml-2 hover:bg-green-700">Subir Concentrado</a>
+      <a href="/download" class="px-4 py-2 bg-green-900 text-white rounded ml-2 hover:bg-green-800">Descargar Concentrado</a>
+  </nav>
+</div>
+{% endblock %}
