@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, send_file, flash, session, send_from_directory, jsonify, make_response
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import String, func, text
+from sqlalchemy import String, func, text, cast, Text
 import pandas as pd
 from io import BytesIO
 import io
@@ -9,10 +9,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import logging
 from contextlib import contextmanager
 from database import get_engine
-from models import Contrato, usuarios, Spei, Retiros, Nominales
+from models import *
 import os
 from pathlib import Path
-from crud import clean_sql_string
+from crud import clean_sql_string, tiene_permiso
 import random, string
 from docx import Document
 from docx.shared import Pt
@@ -103,9 +103,14 @@ def concentradocontratos():
         return redirect("/login")
 
     usuario_logeado = session["usuario"]
+    print:(f"Usuario logeado: {usuario_logeado}")
     search_term = request.args.get("search", "")
     page = int(request.args.get("page", 1))
     per_page = 15
+
+    if not tiene_permiso(usuario_logeado, "contratos"):
+        flash("NO TIENES PERMISOS PARA ACCCEDER A ESTA PÁGINA", "error")
+        return redirect(url_for("index"))
 
     with get_session() as session_db:
         # Verificar si el usuario es maestro
@@ -202,6 +207,11 @@ def make_session_permanent():
 def upload_file():
     if "usuario" not in session:
         return redirect("/login")
+    
+    usuario_logeado = session["usuario"]
+    if not tiene_permiso(usuario_logeado, "upload"):
+        flash("NO TIENES PERMISOS PARA ACCCEDER A ESTA PÁGINA", "error")
+        return redirect(url_for("index"))
 
     if request.method == 'GET':
         return render_template('upload.html')
@@ -345,6 +355,11 @@ def update_status(contrato_id):
 def update_massive_status():
     if "usuario" not in session:
         return redirect("/login")
+
+    usuario_logeado = session["usuario"]
+    if not tiene_permiso(usuario_logeado, "update"):
+        flash("NO TIENES PERMISOS PARA ACCCEDER A ESTA PÁGINA", "error")
+        return redirect(url_for("index"))
     
     if request.method == "POST":   
         file = request.files.get("file")
@@ -466,6 +481,9 @@ def download():
         return redirect(url_for("login"))
 
     usuario_logeado = session["usuario"]
+    if not tiene_permiso(usuario_logeado, "download"):
+        flash("NO TIENES PERMISOS PARA ACCCEDER A ESTA PÁGINA", "error")
+        return redirect(url_for("index"))
 
     with get_session() as session_db:
         user = session_db.query(usuarios).filter_by(nombre=usuario_logeado).first()
@@ -536,11 +554,16 @@ def download():
 
     return render_template("download.html")
 
-# Ruta para mostrar el formulario
 @app.route('/spei', methods=['GET'])
 def spei_form():
     if "usuario" not in session:
         return redirect("/login")
+
+    usuario_logeado = session["usuario"]
+    if not tiene_permiso(usuario_logeado, "spei"):
+        flash("NO TIENES PERMISOS PARA ACCCEDER A ESTA PÁGINA", "error")
+        return redirect(url_for("index"))
+    
     return render_template("spei.html")
 
 # Ruta para manejar el envío del formulario
@@ -606,6 +629,10 @@ def concentradospei():
     search_term = request.args.get("search", "")
     page = int(request.args.get("page", 1))
     per_page = 15
+
+    if not tiene_permiso(usuario_logeado, "concentradospei"):
+        flash("NO TIENES PERMISOS PARA ACCCEDER A ESTA PÁGINA", "error")
+        return redirect(url_for("index"))
 
     with get_session() as session_db:
         # Verificar si el usuario es maestro
@@ -690,6 +717,9 @@ def downloadspei():
         return redirect(url_for("login"))
 
     usuario_logeado = session["usuario"]
+    if not tiene_permiso(usuario_logeado, "downloadspei"):
+        flash("NO TIENES PERMISOS PARA ACCCEDER A ESTA PÁGINA", "error")
+        return redirect(url_for("index"))
 
     with get_session() as session_db:
         user = session_db.query(usuarios).filter_by(nombre=usuario_logeado).first()
@@ -784,6 +814,12 @@ def update_statusspei(spei_id):
 def retiros_form():
     if "usuario" not in session:
         return redirect("/login")
+
+    usuario_logeado = session["usuario"]
+    if not tiene_permiso(usuario_logeado, "retiros"):
+        flash("NO TIENES PERMISOS PARA ACCCEDER A ESTA PÁGINA", "error")
+        return redirect(url_for("index"))
+    
     return render_template("retiros.html")
 
 @app.route('/insert_retiro', methods=['POST'])
@@ -930,6 +966,10 @@ def concentradoretiro():
     page = int(request.args.get("page", 1))
     per_page = 15
 
+    if not tiene_permiso(usuario_logeado, "concentradoretiros"):
+        flash("NO TIENES PERMISOS PARA ACCCEDER A ESTA PÁGINA", "error")
+        return redirect(url_for("index"))
+
     with get_session() as session_db:
         # Verificar si el usuario es maestro
         user = session_db.query(usuarios).filter_by(nombre=usuario_logeado).first()
@@ -944,13 +984,13 @@ def concentradoretiro():
         # Filtro de búsqueda
         if search_term:
             query = query.filter(
-                Retiros.cuenta_origen.cast(String).like(f"%{search_term}%") |
+                cast(Retiros.cuenta_origen, Text).like(f"%{search_term}%") |
                 Retiros.titular.like(f"%{search_term}%") |
                 Retiros.beneficiario.like(f"%{search_term}%") |
                 Retiros.operacion.like(f"%{search_term}%") |
                 Retiros.sucursal.like(f"%{search_term}%") |
                 Retiros.usuario.like(f"%{search_term}%") |
-                Retiros.cuenta_destino.like(f"%{search_term}%")
+                cast(Retiros.cuenta_destino, Text).like(f"%{search_term}%")
             )
 
         # Paginación y obtención de datos
@@ -1015,6 +1055,9 @@ def downloadretiros():
         return redirect(url_for("login"))
 
     usuario_logeado = session["usuario"]
+    if not tiene_permiso(usuario_logeado, "dowloadretiros"):
+        flash("NO TIENES PERMISOS PARA ACCCEDER A ESTA PÁGINA", "error")
+        return redirect(url_for("index"))
 
     with get_session() as session_db:
         user = session_db.query(usuarios).filter_by(nombre=usuario_logeado).first()
@@ -1107,6 +1150,10 @@ def concentradonominales():
     page = int(request.args.get("page", 1))
     per_page = 15
 
+    if not tiene_permiso(usuario_logeado, "concentradonominales"):
+        flash("NO TIENES PERMISOS PARA ACCCEDER A ESTA PÁGINA", "error")
+        return redirect(url_for("index"))
+
     with get_session() as session_db:
         # Verificar si el usuario es maestro
         user = session_db.query(usuarios).filter_by(nombre=usuario_logeado).first()
@@ -1119,14 +1166,15 @@ def concentradonominales():
             query = session_db.query(Nominales).filter_by(usuario=usuario_logeado)
 
         # Filtro de búsqueda
-        if search_term:
+        if search_term.isdigit():
+            query = query.filter(Nominales.numero_cuenta == int(search_term))
+        else:
             query = query.filter(
-                Nominales.numero_cuenta.cast(String).like(f"%{search_term}%") |
-                Nominales.beneficiario.like(f"%{search_term}%") |
-                Nominales.tarjeta.like(f"%{search_term}%") |
-                Nominales.cc.like(f"%{search_term}%") |
-                Nominales.sucursal.like(f"%{search_term}%") |
-                Nominales.usuario.like(f"%{search_term}%")
+                Nominales.beneficiario.ilike(f"%{search_term}%") |
+                Nominales.tarjeta.ilike(f"%{search_term}%") |
+                Nominales.cc.cast(String).ilike(f"%{search_term}%") |
+                Nominales.sucursal.ilike(f"%{search_term}%") |
+                Nominales.usuario.ilike(f"%{search_term}%")
             )
 
         # Paginación y obtención de datos
@@ -1189,6 +1237,10 @@ def downloadnominales():
         return redirect(url_for("login"))
 
     usuario_logeado = session["usuario"]
+    
+    if not tiene_permiso(usuario_logeado, "downloadnominales"):
+        flash("NO TIENES PERMISOS PARA ACCCEDER A ESTA PÁGINA", "error")
+        return redirect(url_for("index"))
 
     with get_session() as session_db:
         user = session_db.query(usuarios).filter_by(nombre=usuario_logeado).first()
@@ -1261,6 +1313,11 @@ def downloadnominales():
 def upload_nomiles():
     if "usuario" not in session:
         return redirect("/login")
+
+    usuario_logeado = session["usuario"]
+    if not tiene_permiso(usuario_logeado, "uploadnominales"):
+        flash("NO TIENES PERMISOS PARA ACCCEDER A ESTA PÁGINA", "error")
+        return redirect(url_for("index"))
 
     if request.method == 'GET':
         return render_template('uploadnominales.html')
